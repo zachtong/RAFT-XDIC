@@ -32,7 +32,7 @@ import torch
 print("python", sys.version.split()[0], "| torch", torch.__version__, "| cuda", torch.cuda.is_available(),
       "|", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "NO GPU")
 assert torch.cuda.is_available(), "no GPU visible"
-for m in ("numpy", "scipy", "PIL", "yaml", "pandas", "tensorboard", "cv2",
+for m in ("numpy", "scipy", "PIL", "yaml", "pandas", "tensorboard",
           "raftcorr.train", "raftcorr.datasets", "raftcorr.data_generation.build_dataset",
           "scripts.run_inference"):
     importlib.import_module(m)
