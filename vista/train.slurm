@@ -2,10 +2,12 @@
 # =============================================================================
 # Training run on a Vista GH200 node (paths, data and recipe: vista/env_vista.sh).
 #
-# Submit from the repository root:   sbatch vista/train.slurm
+# Submit from the repository root:   sbatch vista/train.slurm                    (RAFT-XDIC)
+#                                    sbatch --job-name=control --export=ALL,RUN_VARIANT=control vista/train.slurm
+#                                                                                (RAFT-DIC, matched control)
 # Safe to resubmit any number of times: a finished run exits at once; an interrupted one resumes
 # from checkpoints/raftcorr-F_state.pth (model, optimizer, OneCycle scheduler, AMP scaler, epoch).
-# Next 24 h window if needed:        sbatch --dependency=afterany:<jobid> vista/train.slurm
+# Next 24 h window if needed:        sbatch --dependency=afterany:<jobid> [same options] vista/train.slurm
 # At the end it runs scripts/check_dead_zone.py on the best and latest checkpoints and copies the
 # curated results to $WORK/raft-xdic/runs/<run>/ (not purged).
 # =============================================================================

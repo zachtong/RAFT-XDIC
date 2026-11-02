@@ -12,6 +12,10 @@ i.e. for each target (deformed) pixel we sample the source (reference) location 
 This guarantees full coverage without holes. Interpolation is cubic spline; out-of-bounds
 samples are clamped to the border (nearest / replicate), matching the MATLAB 'nearest'
 extrapolation.
+
+The field passed in is therefore indexed by the DEFORMED pixel x. The displacement of reference
+pixel X (what a network or subset DIC reports) is U(X) = u(X + U(X)); it equals the field passed in
+only for rigid motion and sliding cracks. ``label_convention.reference_grid_labels`` computes U.
 """
 
 from __future__ import annotations

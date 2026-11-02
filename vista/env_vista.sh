@@ -12,18 +12,34 @@ conda activate "$WORK/envs/raftcorr"
 export PROJECT_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 export PYTHONPATH="$PROJECT_DIR:${PYTHONPATH:-}"
 
-# Training set: 7,200 + 800 pairs (1,600 mode II crack pairs from
-# configs/dataset_gen/mode2_7px_both_senses_split.yaml + 6,400 smooth-field pairs), uploaded once
-# as a tarball. The tarball stays on $WORK (kept); the extracted copy lives on $SCRATCH (purged
-# after ~10 idle days) and is re-extracted automatically when missing.
-export DATASET="mode2_mixed_both_senses_split"
+# Two runs share this file. Pick one when submitting (default: xdic):
+#   sbatch vista/train.slurm                                                        -> RAFT-XDIC
+#   sbatch --job-name=control --export=ALL,RUN_VARIANT=control vista/train.slurm    -> RAFT-DIC
+# Both training sets have 7,200 + 800 pairs and share the same 6,400 smooth-field pairs:
+#   xdic    : + 1,600 mode II crack pairs (configs/dataset_gen/mode2_7px_both_senses_split.yaml)
+#   control : + 1,600 smooth-field pairs (same speckle and displacement range), the matched control
+# Labels are reference-grid displacements (where each reference pixel went); pixels without a unique
+# label, where the synthetic warp folds, are excluded by the valid/ masks shipped with the data.
+# Each set is uploaded once as a tarball. The tarball stays on $WORK (kept); the extracted copy lives
+# on $SCRATCH (purged after ~10 idle days) and is re-extracted automatically when missing.
+export RUN_VARIANT="${RUN_VARIANT:-xdic}"
+case "$RUN_VARIANT" in
+    xdic)
+        export DATASET="mode2_mixed_both_senses_split_refgrid"
+        export RUN="xdic_split_refgrid_onecycle_seed0" ;;
+    control)
+        export DATASET="smooth_mixed_refgrid"
+        export RUN="control_refgrid_onecycle_seed0" ;;
+    *)
+        echo "ERROR: RUN_VARIANT must be xdic or control, got '$RUN_VARIANT'"
+        return 1 2>/dev/null || exit 1 ;;
+esac
 export TARBALL="$WORK/raft-xdic/data/${DATASET}.tar.gz"
 export TARBALL_SHA256_FILE="$PROJECT_DIR/vista/${DATASET}.tar.gz.sha256"
 export DATA_ROOT="$SCRATCH/raft-xdic/data"
 export DATA="$DATA_ROOT/$DATASET"
 
-# Run: configs/train_F_onecycle.yaml, seed 0, from scratch, 30 epochs x 3,600 steps, batch 2.
-export RUN="xdic_split_onecycle_seed0"
+# Recipe (both runs): configs/train_F_onecycle.yaml, seed 0, from scratch, 30 epochs x 3,600 steps, batch 2.
 export TRAIN_CFG="configs/train_F_onecycle.yaml"
 export EPOCHS=30
 export SEED=0
