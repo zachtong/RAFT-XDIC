@@ -1,0 +1,64 @@
+# Mode II training cracks, slip shared by both sides: 1,600 pairs, shear 1-7 px, both shear senses.
+# Identical to mode2_7px_both_senses.yaml except random_split: true. The +normal half moves
+# split * s along the sense direction, the other half (1 - split) * s the opposite way, split
+# uniform in [0, 1); the slip across the line stays s. split is drawn from its own stream, so
+# each id keeps the speckle, crack line, magnitude, sense and noise of mode2_7px_both_senses;
+# only u, v and the deformed image change. Generate WITH --crack.
+seed: 0
+num_pairs: 1600
+image:
+  full_size: 256
+  crop_size: 128
+  bit_depth: 8
+displacement:
+  range:
+  - 1.0
+  - 7.0
+  field_type: crack_mode2_simple
+  field_params:
+    crop_size: 128
+    random_sense: true
+    random_split: true
+  rotations_deg:
+  - 0
+  - 90
+  - 180
+  - 270
+speckle:
+  type: ellipse
+  diameter_range:
+  - 2.0
+  - 8.0
+  density_range:
+  - 0.4
+  - 0.8
+  variation: 0.3
+  eccentricity_max: 0.4
+  invert_prob: 0.2
+  white_bg:
+    speckle_intensity:
+    - 0
+    - 80
+    background_intensity:
+    - 200
+    - 255
+  black_bg:
+    speckle_intensity:
+    - 200
+    - 255
+    background_intensity:
+    - 0
+    - 80
+  blur_sigma_center_range:
+  - 0.1
+  - 1.1
+  blur_sigma_band: 0.05
+noise:
+  std_range:
+  - 2.0
+  - 10.0
+output:
+  image_format: png
+  flow_format: npy
+  write_verification: false
+  val_fraction: 0.1

@@ -1,0 +1,4 @@
+__pycache__/
+*.py[cod]
+vista/logs/*
+!vista/logs/.gitkeep

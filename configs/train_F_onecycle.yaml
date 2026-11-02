@@ -1,0 +1,29 @@
+# RAFTcorr-FINE (F) with an annealed learning rate: identical to train_F.yaml except the schedule.
+# train_F.yaml uses StepLR (x0.9 every 5 epochs), which ends at 5.3e-5 after 30 epochs, so the
+# weights still change noticeably from one epoch to the next. OneCycle = the original RAFT
+# from-scratch schedule: 5 % linear warmup from lr/25 to lr, then linear decay to ~0 at the last
+# step. Every epoch's weights are kept (checkpoints/<name>_epochNNN.pth) for later diagnostics.
+name: raftcorr-F
+
+model:
+  downsample_factor: 1        # full-resolution features (stride-1 stem)
+  corr_levels: 2
+  corr_radius: 4
+  small: false
+  dropout: 0.0
+  mixed_precision: true
+
+train:
+  num_epochs: 30
+  batch_size: 2
+  image_size: [128, 128]
+  lr: 1.0e-4
+  wdecay: 1.0e-5
+  epsilon: 1.0e-8
+  gamma: 0.9
+  grad_clip: 1.0
+  iters: 12
+  val_freq_epochs: 1
+  schedule: onecycle
+  pct_start: 0.05
+  save_every_epoch: true
